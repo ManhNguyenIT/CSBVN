@@ -17,7 +17,7 @@
 </nav>
 
 @code {
-    private List<string> navLinks = new List<string> { "monitor", "setting", "check", "notify" };
+    private List<string> navLinks = new List<string> { "monitor", "setting", "check", "notify", "mission" };
     private int currentLinkIndex = 0;
 
     protected override void OnInitialized()
@@ -31,7 +31,7 @@
         }
         else
         {
-            pageNavi.NavigateTo(1);
+            pageNavi.NavigateTo(4);
         }
     }
 

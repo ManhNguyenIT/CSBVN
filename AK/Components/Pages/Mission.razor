@@ -1,0 +1,258 @@
+﻿<!-- Checklist.razor -->
+@using AK.Services
+@using AK.Enums
+@page "/mission"
+
+@inject IDataSendService dataSender
+<PageTitle>TRẠNG THÁI KẾT NỐI CỦA HỆ THỐNG</PageTitle>
+
+<!-- Bố cục ngoài cùng với hai hàng -->
+<div class="w-100 h-100 d-grid" style="grid-template-rows: 1fr auto;">
+
+    <!-- Hàng đầu tiên: Phần nội dung chính với hai cột -->
+    <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
+
+        <!-- Thẻ card đầu tiên -->
+        <div class="d-flex flex-column">
+            <MudCard Elevation="6" class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                <MudCardHeader Class="p-0 m-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Class="text-center fs-4 fw-bolder" Style="background-color: #C5E0B4">
+                            TRẠNG THÁI KẾT NỐI CỦA HỆ THỐNG
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                    <MudTable T="TrangThaiKetNoi" Items="@DanhSachTrangThaiKetNoi" Class="mb-auto" Hover="true" LoadingProgressColor="Color.Info" Bordered>
+                        <HeaderContent>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Dải bắn</MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Kết nối</MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Người bắn</MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Lượt bắn</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Class="table-row fs-5 text-center">Dải bắn số @context.Id</MudTd>
+                            @if (context.Status == null)
+                            {
+                                <MudTd Class="table-row fs-5 text-center fw-bolder">Không sử dụng</MudTd>
+                            }
+                            else if (context.Status == true)
+                            {
+                                <MudTd Class="table-row text-center">
+                                    <img style="width:auto; height:40px;" src="images/blue_light.png" />
+                                </MudTd>
+                            }
+                            else
+                            {
+                                <MudTd Class="table-row text-center">
+                                    <img style="width:auto; height:40px;" src="images/red_light.png" />
+                                </MudTd>
+                            }
+                            <MudTd Class="table-row text-center fs-5 fw-bolder">
+                                Nguyễn văn A
+                            </MudTd>
+                            <MudTd Class="table-row text-center fs-5 fw-bolder">
+                                2
+                            </MudTd>
+
+                        </RowTemplate>
+                    </MudTable>
+                    <div class="mt-auto text-center">
+                        <img style="width: 100%; height: 150px;" src="images/boat.png" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </div>
+
+        <!-- Thẻ card thứ hai với video -->
+        <div class="d-flex flex-column">
+            <MudCard Elevation="6" class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                <MudCardHeader Class="p-0 m-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Class="text-center fs-4 fw-bolder" Style="background-color: #C5E0B4">
+                            KẾT QUẢ
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                    <MudTable T="TrangThaiKetNoi" Items="@DanhSachTrangThaiKetNoi" Class="mb-auto" Hover="true" LoadingProgressColor="Color.Info" Bordered>
+                        <HeaderContent>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #F4B183"></MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #F4B183">
+                                Bia số 7e
+                            </MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #F4B183">
+                                Bia số 6b
+                            </MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #F4B183">
+                                Bia số 10
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Class="table-row fs-5 text-center">Dải bia @context.Id</MudTd>
+                            <MudTd Class="table-row fs-5 text-center fw-bolder"></MudTd>
+                            <MudTd Class="table-row text-center fs-5 fw-bolder">
+                            </MudTd>
+                            <MudTd Class="table-row text-center fs-5 fw-bolder">
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                    <div class="mt-auto text-center">
+                        <img style="height:190px; width: -moz-fit-content;" src="images/target_01.png" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </div>
+
+    </div>
+
+    <!-- Hàng thứ hai: Hình ảnh ocean nằm dưới cùng -->
+    <div>
+        <img style="width: 100%; height: 50px;" src="images/ocean.jpg" />
+    </div>
+</div>
+
+@code {
+    public class TrangThaiKetNoi
+    {
+        public int Id { get; set; }
+        public bool? Status { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        dataSender.RemoteStateReceived += HandleStateReceived;
+        dataSender.LeakStateReceived += HandleLeakStateReceived;
+    }
+
+    private void HandleStateReceived(byte[] data)
+    {
+        _ = InvokeAsync(() =>
+        {
+            var remoteAddress = data[0];
+            switch (remoteAddress)
+            {
+                case (byte)RemoteAddress.Main:
+                    // {
+                    //     for (int i = 0; i < 8; i++)
+                    //     {
+                    //         // Tạo mask với bit 1 tại vị trí i
+                    //         var matChanChinh = MatHungDanChinh.FirstOrDefault(c => c.Id == (i + 1));
+                    //         if (matChanChinh != null)
+                    //         {
+                    //             byte mask = (byte)(1 << i);
+                    //             if ((data[2] & mask) == 0) // Kiểm tra bit tại vị trí i có phải là 0 không
+                    //             {
+                    //                 matChanChinh.State = "Bị chập";
+                    //             }
+                    //             else
+                    //             {
+                    //                 matChanChinh.State = "Tốt";
+                    //             }
+                    //         }
+
+                    //     }
+                    // }
+                    break;
+                case (byte)RemoteAddress.Sub:
+                    // {
+                    //     for (int i = 0; i < 8; i++)
+                    //     {
+                    //         byte mask = (byte)(1 << i); // Tạo mask với bit 1 tại vị trí i
+                    //         var matChanPhu = MatHungDanPhu.FirstOrDefault(c => c.Id == (i + 9));
+                    //         if (matChanPhu != null)
+                    //         {
+                    //             if ((data[2] & mask) == 0) // Kiểm tra bit tại vị trí i có phải là 0 không
+                    //             {
+                    //                 matChanPhu.State = "Bị chập";
+                    //             }
+                    //             else
+                    //             {
+                    //                 matChanPhu.State = "Tốt";
+                    //             }
+
+                    //         }
+                    //     }
+                    // }
+                    break;
+                default:
+                    break;
+
+            }
+            StateHasChanged();
+        });
+    }
+
+    private void HandleLeakStateReceived(byte[] data)
+    {
+        _ = InvokeAsync(() =>
+        {
+            var remoteAddress = data[0];
+            // switch (remoteAddress)
+            // {
+            //     case (byte)RemoteAddress.Main:
+            //         {
+            //             for (int i = 0; i < 8; i++)
+            //             {
+            //                 // Tạo mask với bit 1 tại vị trí i
+            //                 var matChanChinh = DanhSachTrangThaiKetNoi.FirstOrDefault(c => c.Id == (i + 1));
+            //                 if (matChanChinh != null)
+            //                 {
+            //                     byte mask = (byte)(1 << i);
+            //                     if ((data[1] & mask) == 0) // Kiểm tra bit tại vị trí i có phải là 0 không
+            //                     {
+            //                         matChanChinh.State = "Bị chập";
+            //                     }
+            //                     else
+            //                     {
+            //                         matChanChinh.State = "Bình thường";
+            //                     }
+
+            //                 }
+
+            //             }
+            //         }
+            //         break;
+            //     case (byte)RemoteAddress.Sub:
+            //         // {
+            //         //     for (int i = 0; i < 8; i++)
+            //         //     {
+            //         //         byte mask = (byte)(1 << i); // Tạo mask với bit 1 tại vị trí i
+            //         //         var matChanPhu = MatChanDanPhu.FirstOrDefault(c => c.Id == (i + 9));
+            //         //         if (matChanPhu != null)
+            //         //         {
+            //         //             if ((data[1] & mask) == 0) // Kiểm tra bit tại vị trí i có phải là 0 không
+            //         //             {
+            //         //                 matChanPhu.State = "Bị chập";
+            //         //             }
+            //         //             else
+            //         //             {
+            //         //                 matChanPhu.State = "Bình thường";
+            //         //             }
+
+            //         //         }
+            //         //     }
+            //         // }
+            //         break;
+            //     default:
+            //         break;
+
+            // }
+            StateHasChanged();
+        });
+    }
+
+    private List<TrangThaiKetNoi> DanhSachTrangThaiKetNoi = new()
+    {
+        new TrangThaiKetNoi{ Id = 1, Status = true},
+        new TrangThaiKetNoi{ Id = 2, Status = false},
+        new TrangThaiKetNoi{ Id = 3, Status = null},
+        new TrangThaiKetNoi{ Id = 4, Status = true},
+    };
+
+    private void CheckClick()
+    {
+        dataSender.RemoteUpdateStatus();
+    }
+}
