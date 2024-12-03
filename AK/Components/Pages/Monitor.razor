@@ -1,190 +1,84 @@
 ﻿<!-- Checklist.razor -->
 @using AK.Services
 @using AK.Enums
-@page "/check"
+@page "/monitor"
 
 @inject IDataSendService dataSender
-<PageTitle>
-    Kiểm tra, thông báo tình trạng các mặt bia tại các Dải
-</PageTitle>
+<PageTitle>TRẠNG THÁI KẾT NỐI CỦA HỆ THỐNG</PageTitle>
 
 <!-- Bố cục ngoài cùng với hai hàng -->
 <div class="w-100 h-100 d-grid" style="grid-template-rows: 1fr auto;">
-    <div class="m-2 text-center">
-        <span class="p-2 bg-warning fw-500 fs-5 text-uppercase">
-            Kiểm tra, thông báo tình trạng các mặt bia tại các Dải
-        </span>
-    </div>
-    <div class="d-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-        <div class="mt-auto">
-            <img style="width: -webkit-fill-available; height:120px;" src="images/boat.png" />
-        </div>
-        <div class="d-flex flex-column justify-content-center align-items-center">
-            <button class="btn rounded-circle p-0" style="border: none;">
-                <img style="height:100px" src="images/blue_large_button.png" />
-            </button>
-            <span class="fs-5 fw-500">
-                Kiểm tra hoạt động của hệ thống
-            </span>
-        </div>
-        <div class="d-flex justify-content-center align-items-center">
-            <img style="width: fit-content; height:120px;" src="images/target.png" />
-        </div>
-    </div>
+
     <!-- Hàng đầu tiên: Phần nội dung chính với hai cột -->
     <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
+
         <!-- Thẻ card đầu tiên -->
         <div class="d-flex flex-column">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
+            <MudCard Elevation="6" class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                <MudCardHeader Class="p-0 m-0">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Class="text-center fs-4 fw-bolder" Style="background-color: #C5E0B4">
+                            TRẠNG THÁI KẾT NỐI CỦA HỆ THỐNG
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="p-0 m-0 flex-grow-1 d-flex flex-column">
+                    <MudTable T="TrangThaiKetNoi" Items="@DanhSachTrangThaiKetNoi" Class="mb-auto" Hover="true" LoadingProgressColor="Color.Info" Bordered>
+                        <HeaderContent>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Dải bắn</MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Hiển thị đèn kết nối</MudTh>
+                            <MudTh Class="text-center table-header fs-4 fw-bolder" Style="background-color: #CFD5EA">Tình trạng</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Class="table-row fs-5 text-center">Dải bắn số @context.Id</MudTd>
+                            @if (context.Status == null)
+                            {
+                                <MudTd Class="table-row fs-5 text-center fw-bolder">Không sử dụng</MudTd>
+                                <MudTd Class="table-row fs-5 fw-bolder"></MudTd>
+                            }
+                            else if (context.Status == true)
+                            {
+                                <MudTd Class="table-row text-center">
+                                    <img style="width:auto; height:40px;" src="images/blue_light.png" />
+                                </MudTd>
+                                <MudTd Class="table-row text-center fs-5 fw-bolder">
+                                    Kết nối tốt
+                                </MudTd>
+                            }
+                            else
+                            {
+                                <MudTd Class="table-row text-center">
+                                    <img style="width:auto; height:40px;" src="images/red_light.png" />
+                                </MudTd>
+                                <MudTd Class="table-row text-center fs-5 fw-bolder">
+                                    Mất kết nối
+                                </MudTd>
+                            }
+
+                        </RowTemplate>
+                    </MudTable>
+                    <div class="mt-auto text-center">
+                        <img src="images/boat.png" />
+                    </div>
+                </MudCardContent>
+            </MudCard>
         </div>
 
         <!-- Thẻ card thứ hai với video -->
         <div class="d-flex flex-column">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
+            <MudCard Elevation="6" class="flex-grow-1 position-relative overflow-hidden">
+                <video class="position-absolute top-50 start-50 translate-middle w-100 h-100" autoplay loop muted style="object-fit: cover;">
+                    <source src="images/ak.mp4" type="video/mp4" />
+                    Trình duyệt của bạn không hỗ trợ thẻ video.
+                </video>
+            </MudCard>
         </div>
 
+    </div>
+
+    <!-- Hàng thứ hai: Hình ảnh ocean nằm dưới cùng -->
+    <div>
+        <img src="images/ocean.jpg" />
     </div>
 </div>
 

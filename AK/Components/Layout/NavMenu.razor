@@ -4,38 +4,21 @@
 @inject IComDataService comService
 @inject IDataSendService dataSender
 
-<div class="d-flex flex-row align-items-center">
-    <div class="nav-item">
-        <NavLink @onclick="SettingClick" class="nav-link" href="/setting">
-            <span class="mdi mdi-view-dashboard mdi-24px" aria-hidden="true"></span> Cài đặt
-        </NavLink>
+<nav class="navbar navbar-light bg-warning">
+    <div class="container-fluid">
+        <form class="d-flex gap-2">
+            <button @onclick="SettingClick" class="ps-10 pe-10 ms-15 btn btn-outline-warning bg-white" type="button">Cài đặt</button>
+            <button @onclick="PrevClick" class="ps-10 pe-10 ms-15 btn btn-outline-warning bg-white" type="button">Lùi trang</button>
+            <button @onclick="NextClick" class="ps-10 pe-10 me-15 btn btn-outline-warning bg-white" type="button">Tiến trang</button>
+            <button @onclick="CheckClick" class="ps-10 pe-10 btn btn-outline-warning bg-white" type="button">Kiểm tra hệ thống</button>
+            <button @onclick="NotifyClick" class="ps-10 pe-10 btn btn-outline-warning bg-white" type="button">Thông báo chạm chập</button>
+        </form>
     </div>
-    <div class="nav-item">
-        <NavLink @onclick="PrevClick" class="nav-link" href="/prev">
-            <span class="mdi mdi-cog mdi-24px" aria-hidden="true"></span> Lùi trang
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink @onclick="NextClick" class="nav-link" href="/next">
-            <span class="mdi mdi-playlist-check mdi-24px" aria-hidden="true"></span> Tiến trang
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink @onclick="CheckClick" class="nav-link" href="/check">
-            <span class="mdi mdi-ship-wheel mdi-24px" aria-hidden="true"></span> Kiểm tra hệ thống
-        </NavLink>
-    </div>
-    <div class="nav-item">
-        <NavLink @onclick="NotifyClick" class="nav-link" href="/notify">
-            <span class="mdi mdi-ship-wheel mdi-24px" aria-hidden="true"></span> Thông báo chạm chập
-        </NavLink>
-    </div>
-
-</div>
+</nav>
 
 @code {
-    private List<string> navLinks = new List<string> { "setting", "check", "notify" };
-    private int currentLinkIndex = 1;
+    private List<string> navLinks = new List<string> { "monitor", "setting", "check", "notify" };
+    private int currentLinkIndex = 0;
 
     protected override void OnInitialized()
     {
@@ -48,7 +31,7 @@
         }
         else
         {
-            pageNavi.NavigateTo(0);
+            pageNavi.NavigateTo(1);
         }
     }
 
@@ -63,7 +46,7 @@
 
     private void SettingClick()
     {
-        pageNavi.NavigateTo(0);
+        pageNavi.NavigateTo(1);
     }
 
     private void PrevClick()
@@ -78,12 +61,12 @@
 
     private void CheckClick()
     {
-        pageNavi.NavigateTo(1);
+        pageNavi.NavigateTo(2);
     }
 
     private void NotifyClick()
     {
-        pageNavi.NavigateTo(2);
+        pageNavi.NavigateTo(3);
     }
 
     private void NavigateToLink(string link)
