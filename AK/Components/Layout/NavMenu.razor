@@ -1,0 +1,106 @@
+﻿@using AK.Services
+@inject NavigationManager naviManger
+@inject IPageNavigationService pageNavi
+@inject IComDataService comService
+@inject IDataSendService dataSender
+
+<div class="d-flex flex-row align-items-center">
+    <div class="nav-item">
+        <NavLink @onclick="SettingClick" class="nav-link" href="/setting">
+            <span class="mdi mdi-view-dashboard mdi-24px" aria-hidden="true"></span> Cài đặt
+        </NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink @onclick="PrevClick" class="nav-link" href="/prev">
+            <span class="mdi mdi-cog mdi-24px" aria-hidden="true"></span> Lùi trang
+        </NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink @onclick="NextClick" class="nav-link" href="/next">
+            <span class="mdi mdi-playlist-check mdi-24px" aria-hidden="true"></span> Tiến trang
+        </NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink @onclick="CheckClick" class="nav-link" href="/check">
+            <span class="mdi mdi-ship-wheel mdi-24px" aria-hidden="true"></span> Kiểm tra hệ thống
+        </NavLink>
+    </div>
+    <div class="nav-item">
+        <NavLink @onclick="NotifyClick" class="nav-link" href="/notify">
+            <span class="mdi mdi-ship-wheel mdi-24px" aria-hidden="true"></span> Thông báo chạm chập
+        </NavLink>
+    </div>
+
+</div>
+
+@code {
+    private List<string> navLinks = new List<string> { "setting", "check", "notify" };
+    private int currentLinkIndex = 1;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        pageNavi.PageChanged += HandlePageChanged;
+        pageNavi.TotalPage = navLinks.Count;
+        if (comService.IsConnected())
+        {
+            pageNavi.NavigateTo(currentLinkIndex);
+        }
+        else
+        {
+            pageNavi.NavigateTo(0);
+        }
+    }
+
+    private void HandlePageChanged(int pageIndex)
+    {
+        _ = InvokeAsync(() =>
+        {
+            NavigateToLink(navLinks[pageIndex]);
+            StateHasChanged();
+        });
+    }
+
+    private void SettingClick()
+    {
+        pageNavi.NavigateTo(0);
+    }
+
+    private void PrevClick()
+    {
+        pageNavi.NavigateBack();
+    }
+
+    private void NextClick()
+    {
+        pageNavi.NavigateForward();
+    }
+
+    private void CheckClick()
+    {
+        pageNavi.NavigateTo(1);
+    }
+
+    private void NotifyClick()
+    {
+        pageNavi.NavigateTo(2);
+    }
+
+    private void NavigateToLink(string link)
+    {
+        currentLinkIndex = navLinks.IndexOf(link);
+        naviManger.NavigateTo(link);
+    }
+
+    private void CloseApp()
+    {
+        System.Environment.Exit(0);
+    }
+
+    public void Dispose()
+    {
+        pageNavi.PageChanged -= HandlePageChanged;
+    }
+
+}
+

@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MARM", "MARM\MARM.csproj", "{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AK", "AK\AK.csproj", "{4AA1E0EB-AAF5-4E52-884B-154254664AE4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4F4F1A6-D6C8-4D9E-8ABA-A63015327E9F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA1E0EB-AAF5-4E52-884B-154254664AE4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6AA084C3-A826-4C0F-A274-80B89D8364A6}
+	EndGlobalSection
+EndGlobal

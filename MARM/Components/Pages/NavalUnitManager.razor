@@ -1,0 +1,24 @@
+﻿@page "/navalunits"
+
+@using MARM.Components.Features.NavalUnitComponents
+@using MARM.Data;
+
+@inject ApplicationDbContext ApplicationDb
+
+<PageTitle>Naval Units Manager</PageTitle>
+
+<div class="w-100 h-100 position-relative overflow-hidden">
+    <div class="w-100 h-100 position-absolute top-0 start-0 overflow-hidden d-flex flex-row">
+        <div class="h-100 p-2" style="width: 500px;">
+            <NavalUnitTreeView @bind-SelectedNavalUnit="SelectedNavalUnit" />
+        </div>
+        <div class="flex-grow-1 h-100 p-2">
+            <NavalMissionTable NavalUnit="@SelectedNavalUnit" @bind-SelectedNavalMission="SelectedNavalMission" />
+        </div>
+    </div>
+</div>
+
+@code {
+    private NavalUnitModel? SelectedNavalUnit { get; set; }
+    private NavalMission? SelectedNavalMission { get; set; }
+}

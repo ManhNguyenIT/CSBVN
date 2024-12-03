@@ -1,0 +1,264 @@
+﻿@using MARM.Data;
+
+@inject NavigationManager Nav
+@inject ApplicationDbContext ApplicationDb
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<style>
+    .naval-mission-selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .naval-mission-selected > td {
+            color: white !important;
+        }
+
+            .naval-mission-selected > td .mud-input {
+                color: white !important;
+            }
+</style>
+
+<MudTable Class="@TableVisible" T="NavalMission" Items="Missions" SelectedItem="@SelectedNavalMission"
+          SelectedItemChanged="OnSelectedItemChanged" RowClassFunc="@SelectedRowClassFunc"
+          Height="575px" Elevation="6" Hover>
+    <ToolBarContent>
+        <div class="w-100 d-flex flex-row justify-content-between align-items-center">
+            <MudText> Danh sách nhiệm vụ của đơn vị <b>@UnitName</b></MudText>
+            <div>
+                <MudTextField @bind-Value="searchString" Margin="Margin.Dense" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
+            </div>
+        </div>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width: 60px; text-align: center; " />
+        <col style="width: 200px;" />
+        <col style="width: 200px;" />
+        <col style="width: 100px; text-align: center;" />
+        <col style="width: 160px; text-align: center;" />
+        <col />
+        <col style="width: 30px; text-align: center;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>STT</MudTh>
+        <MudTh>Tên nhiệm vụ</MudTh>
+        <MudTh>Thời gian</MudTh>
+        <MudTh>Trạng thái</MudTh>
+        <MudTh>Số lượng đơn vị tàu</MudTh>
+        <MudTh>Ghi chú</MudTh>
+        <MudTh Style="text-align: center;">
+            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Add" OnClick="OpenCreateNewNavalMisionForm" />
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="text-align: center;" DataLabel="STT">@context.Index</MudTd>
+        <MudTd DataLabel="Tên nhiệm vụ">@context.Name</MudTd>
+        <MudTd DataLabel="Thời gian">@context.StartAt.ToString("dd/MM/yyyy")</MudTd>
+        <MudTd Style="text-align: center;" DataLabel="Trạng thái">@context.State</MudTd>
+        <MudTd DataLabel="Số lượng đơn vị tàu">@context.BoatCount đơn vị</MudTd>
+        <MudTd DataLabel="Ghi chú">@context.Note</MudTd>
+        <MudTd Style="text-align: center;">
+            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Dense>
+                <MudMenuItem Icon="@Icons.Material.Filled.RemoveRedEye" OnClick="@(() => GotoNavalMission(context))">Xem nhiệm vụ</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Edit">Chỉnh sửa</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteNavalMission(context))">Xóa</MudMenuItem>
+            </MudMenu>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudOverlay Visible="IsCreateNavalMissionFormVisible" DarkBackground AutoClose="false">
+     <MudCard Style="min-width: 500px;">
+         <MudCardHeader>
+             <MudText Typo="Typo.h6">
+                 Tạo nhiệm vụ mới cho đơn vị @UnitName
+             </MudText>
+         </MudCardHeader>
+         <MudCardContent>
+             <MudTextField Class="my-5 mx-2" @bind-Value="CreateNavalUnitMisionName" Label="Tên nhiệm vụ" />
+             <MudDatePicker Class="my-5 mx-2" Label="Ngày thực hiện" @bind-Date="CreateNavalUnitMisionStartAt" DisableToolbar MinDate="@DateTime.Now" />
+             <MudTextField T="string" Label="Ghi chú" Variant="Variant.Outlined" @bind-Value="CreateNavalUnitMisionNote" Lines="3" />
+         </MudCardContent>
+         <MudCardActions Class="d-flex flex-row-reverse">
+             <MudButton Color="Color.Error" Class="mx-2" Disabled="@IsCreatingNavalMission" OnClick="CancelCreateNavalMission">Cancel</MudButton>
+             <MudButton Color="Color.Primary" Class="mx-2" Disabled="@IsCreatingNavalMission" Variant="Variant.Filled" OnClick="CreateNewNavalMission">Create</MudButton>
+         </MudCardActions>
+     </MudCard>
+ </MudOverlay>
+
+
+ @code {
+    [Parameter, EditorRequired]
+    public NavalUnitModel? NavalUnit { get; set; }
+
+    [Parameter]
+    public NavalMission? SelectedNavalMission { get; set; }
+
+    [Parameter]
+    public EventCallback<NavalMission> SelectedNavalMissionChanged { get; set; }
+
+    private MudTable<NavalMission>? MissionTable { get; set; }
+    private List<NavalMission> Missions { get; set; } = new List<NavalMission>();
+    private string searchString = "";
+    private string UnitName => NavalUnit?.Name ?? "";
+    private string TableVisible => NavalUnit is null ? "d-none" : "";
+
+    private bool IsCreateNavalMissionFormVisible { get; set; }
+    private bool IsCreatingNavalMission { get; set; }
+    private string CreateNavalUnitMisionName { get; set; } = "";
+    private string CreateNavalUnitMisionNote { get; set; } = "";
+    private DateTime? CreateNavalUnitMisionStartAt { get; set; }
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+
+        if (parameters.TryGetValue<NavalUnitModel>(nameof(NavalUnit), out var unit))
+        {
+            Missions.Clear();
+            if (unit is not null)
+            {
+                var missions = await ApplicationDb.GetNavalMissions(unit.Id);
+                int index = 1;
+                foreach (var mission in missions)
+                {
+                    Missions.Add(new NavalMission()
+                        {
+                            Id = mission.Id,
+                            NavalUnitId = mission.NavalUnitId,
+                            Name = mission.Name,
+                            Note = mission.Note,
+                            CreateAt = mission.CreateAt,
+                            ModifiedAt = mission.ModifiedAt,
+                            StartAt = mission.StartAt,
+                            State = mission.State,
+                            BoatCount = mission.BoatCount,
+                            Index = index++,
+                        });
+                }
+            }
+        }
+    }
+
+    private async Task OnSelectedItemChanged(NavalMission element)
+    {
+        if (element == SelectedNavalMission) return;
+
+        SelectedNavalMission = element;
+        StateHasChanged();
+        await SelectedNavalMissionChanged.InvokeAsync(SelectedNavalMission);
+    }
+
+    private string SelectedRowClassFunc(NavalMission? element, int rowNumber)
+    {
+        return element is not null && SelectedNavalMission is not null && element.Id == SelectedNavalMission.Id ? "naval-mission-selected" : string.Empty;
+    }
+
+    private void OpenCreateNewNavalMisionForm()
+    {
+        IsCreatingNavalMission = false;
+        CreateNavalUnitMisionName = "";
+        CreateNavalUnitMisionNote = "";
+        CreateNavalUnitMisionStartAt = DateTime.Now;
+        IsCreateNavalMissionFormVisible = true;
+    }
+
+    private void CancelCreateNavalMission()
+    {
+        IsCreateNavalMissionFormVisible = false;
+    }
+
+    private async Task CreateNewNavalMission()
+    {
+        if (NavalUnit is null)
+        {
+            Snackbar.Add("Lỗi xác nhận đơn vị: NullReferenece", Severity.Error);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(CreateNavalUnitMisionName))
+        {
+            Snackbar.Add("Tên nhiệm vụ không được để trống", Severity.Error);
+            return;
+        }
+
+        if (CreateNavalUnitMisionStartAt is null)
+        {
+            Snackbar.Add("Ngày thực hiện nhiệm vụ không được để trống", Severity.Error);
+            return;
+        }
+
+        IsCreatingNavalMission = true;
+        StateHasChanged();
+
+        var result = await ApplicationDb.CreateNewNavalMission(NavalUnit.Id, CreateNavalUnitMisionName, (DateTime)CreateNavalUnitMisionStartAt, CreateNavalUnitMisionNote);
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else if (result.Value is null)
+        {
+            Snackbar.Add("Lỗi dữ liệu tạo đơn vị mới", Severity.Error);
+        }
+        else
+        {
+            IsCreateNavalMissionFormVisible = false;
+            int index = Missions.Count + 1;
+            Missions.Add(new NavalMission()
+                {
+                    Id = result.Value.Id,
+                    NavalUnitId = result.Value.NavalUnitId,
+                    Name = result.Value.Name,
+                    Note = result.Value.Note,
+                    CreateAt = result.Value.CreateAt,
+                    ModifiedAt = result.Value.ModifiedAt,
+                    StartAt = result.Value.StartAt,
+                    State = result.Value.State,
+                    Index = index,
+                });
+        }
+
+        IsCreatingNavalMission = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteNavalMission(NavalMission mission)
+    {
+        if (NavalUnit is null) return;
+
+        bool? confirm = await DialogService.ShowMessageBox("Xóa nhiệm vụ", $"Xác nhận xóa nhiệm vụ {mission.Name} của đơn vị {NavalUnit.Name}?", yesText: "Delete", cancelText: "Cancel");
+        if (confirm is null) return;
+
+        var result = await ApplicationDb.DeleteNavalMission(mission.Id);
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else
+        {
+            Missions.Remove(mission);
+
+            for (int i = mission.Index - 1; i < Missions.Count; i++)
+            {
+                Missions[i].Index--;
+            }
+
+            if (SelectedNavalMission is not null && mission.Id == mission.Id)
+            {
+                SelectedNavalMission = null;
+                await SelectedNavalMissionChanged.InvokeAsync(SelectedNavalMission);
+            }
+
+            Snackbar.Add(result.Message, Severity.Success);
+            StateHasChanged();
+        }
+    }
+
+    private void GotoNavalMission(NavalMission mission)
+    {
+        Nav.NavigateTo($"/mission/{mission.Id}");
+    }
+}

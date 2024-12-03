@@ -1,0 +1,25 @@
+﻿.parallelogram {
+    width: 60px;
+    height: 40px;
+    color: white; /* Màu chữ */
+    font-size: 14px;
+    transform: skew(-20deg); /* Tạo hình thoi */
+    display: flex;
+    align-items: center; /* Căn nội dung dọc */
+    justify-content: center; /* Căn nội dung ngang */
+    margin-right: 5px; /* Khoảng cách giữa các hình */
+}
+
+.parallelogram span {
+    transform: skew(20deg); /* Xoay lại chữ để không bị nghiêng */
+    display: inline-block; /* Giữ nội dung chính xác */
+}
+
+.line-vertical {
+    position: absolute;
+    z-index: -1;
+    left: 7%; /* Căn giữa theo chiều ngang */
+    top: 10%; /* Đầu trên cố định ở 10% chiều cao màn hình */
+    height: 72%; /* Chiều dài của đường thẳng chiếm 80% chiều cao màn hình */
+    width: 2px; /* Độ dày của đường */
+}

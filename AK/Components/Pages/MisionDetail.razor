@@ -1,0 +1,503 @@
+﻿@page "/mission/{MissionIdStr}"
+
+@using AK.Components.Features.MissionComponents
+@using AK.Data
+
+@inject ApplicationDbContext ApplicationDb
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<style>
+    .boat-unit-selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .boat-unit-selected > td {
+            color: white !important;
+        }
+
+            .boat-unit-selected > td .mud-input {
+                color: white !important;
+            }
+</style>
+
+@if (!string.IsNullOrEmpty(Error))
+{
+        <MudAlert Variant="Variant.Filled" Severity="Severity.Error">@Error</MudAlert>
+}
+
+<div class="w-100 h-100 position-relative overflow-hidden">
+    <div class="w-100 h-100 position-absolute top-0 start-0 overflow-hidden d-flex flex-row">
+        <div class="w-50 h-100 p-2 d-flex flex-column">
+            <div class="w-100 d-flex flex-row align-items-center">
+                <img src="images/boat.png" height="150" alt="device" />
+                <img src="images/wifi.png" height="50" style="transform: rotate(90deg);" alt="wifi" />
+                <div class="bg-connect"></div>
+                <img src="images/wifi.png" height="50" style="transform: rotate(-90deg);" alt="wifi" />
+                <img src="images/Picture2.png" height="200" alt="computer" />
+            </div>
+            <div class="flex-grow-1 d-flex flex-column">
+                <div class="d-flex justify-content-center">
+                    <MudText Typo="Typo.h6">Mặt hứng đạn chính</MudText>
+                </div>
+                <div class="flex-grow-1 d-flex flex-row mt-1">
+                    <MatHungDan Index="1" ShotCount="@ShotCountAt1" />
+                    <MatHungDan Index="2" ShotCount="@ShotCountAt2" />
+                    <MatHungDan Index="3" ShotCount="@ShotCountAt3" />
+                    <MatHungDan Index="4" ShotCount="@ShotCountAt4" />
+                </div>
+                <div class="flex-grow-1 d-flex flex-row mt-1">
+                    <MatHungDan Index="5" ShotCount="@ShotCountAt5" />
+                    <MatHungDan Index="6" ShotCount="@ShotCountAt6" />
+                    <MatHungDan Index="7" ShotCount="@ShotCountAt7" />
+                    <MatHungDan Index="8" ShotCount="@ShotCountAt8" />
+                </div>
+            </div>
+            <div class="flex-grow-1 d-flex flex-column">
+                <div class="d-flex justify-content-center">
+                    <MudText Typo="Typo.h6">Mặt hứng đạn phụ</MudText>
+                </div>
+                <div class="flex-grow-1 d-flex flex-row mt-1">
+                    <MatHungDan Index="9" ShotCount="@ShotCountAt9" />
+                    <MatHungDan Index="10" ShotCount="@ShotCountAt10" />
+                    <MatHungDan Index="11" ShotCount="@ShotCountAt11" />
+                    <MatHungDan Index="12" ShotCount="@ShotCountAt12" />
+                </div>
+                <div class="flex-grow-1 d-flex flex-row mt-1">
+                    <MatHungDan Index="13" ShotCount="@ShotCountAt13" />
+                    <MatHungDan Index="14" ShotCount="@ShotCountAt14" />
+                    <MatHungDan Index="15" ShotCount="@ShotCountAt15" />
+                    <MatHungDan Index="16" ShotCount="@ShotCountAt16" />
+                </div>
+            </div>
+            <div class="d-flex flex-row-reverse">
+                <MudButton Size="Size.Small" Variant="Variant.Text" Color="Color.Secondary" Style="text-transform:none" Disabled="@ViewDetailDisable" OnClick="ViewDetail">
+                    Xem chi tiết
+                </MudButton>
+            </div>
+        </div>
+        <div class="w-50 h-100 p-2">
+            <MudCard Elevation="6">
+                <MudCardHeader Class="align-items-center">
+                    <CardHeaderContent>
+                        <div class="w-100 d-flex flex-row justify-content-between align-items-center">
+                            <MudText>Danh sách đơn vị tàu của nhiệm vụ <b>@Mission.Name</b></MudText>
+                            <div class="d-flex flex-row align-items-center">
+                                <MudToggleIconButton @bind-Toggled="@ListBoatUintReadOnly"
+                                                     Icon="@Icons.Material.Filled.EditOff" Color="@Color.Error" Title="Off"
+                                                     ToggledIcon="@Icons.Material.Filled.Edit" ToggledColor="@Color.Success" ToggledTitle="On" />
+                                <MudIconButton Size="Size.Medium" Icon="@Icons.Material.Filled.ImportExport" />
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable T="BoatUnitMissionResult" Items="BoatUnitMissionResults" SelectedItem="@SelectedBoatUnitMissionResult"
+                              Height="430px" Bordered="false" Elevation="0" Hover Dense CanCancelEdit ReadOnly="@ListBoatUintReadOnly"
+                               SelectedItemChanged="OnSelectedBoatUnitMissionResultChanged"
+                               RowClassFunc="@SelectedBoatUnitMissionResultClassFunc"
+                               RowEditPreview="BackupBoatUnitMissionResult"
+                               RowEditCancel="ResetItemToOriginalValues"
+                               RowEditCommit="BoatUnitMissionResultHasBeenCommitted">
+                         <ColGroup>
+                             <col style="width: 60px; text-align: center; " />
+                             <col style="width: 200px;" />
+                             <col style="width: 100px; text-align: center; " />
+                             <col />
+                             <col style="width: 40px;" />
+                             <col style="width: 0px;" />
+                         </ColGroup>
+                         <HeaderContent>
+                             <MudTh>STT</MudTh>
+                             <MudTh>Đơn vị tàu</MudTh>
+                             <MudTh>Kết quả</MudTh>
+                             <MudTh>Ghi chú</MudTh>
+                             <MudTh></MudTh>
+                         </HeaderContent>
+                         <RowTemplate>
+                             <MudTd DataLabel="STT" Style="text-align: center">@context.Index</MudTd>
+                             <MudTd DataLabel="Đơn vị tàu">@context.Name</MudTd>
+                             <MudTd DataLabel="Kết quả" Style="text-align: center">@context.ShotTotal viên</MudTd>
+                             <MudTd DataLabel="Ghi chú">@context.Note</MudTd>
+                             <MudTd Style="text-align: right;">
+                                 <div class="d-flex flex-row">
+                                     <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.RemoveRedEye" />
+                                    @if (CanBeDeteleRecord)
+                                    {
+                                            <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteBoatUnitMissionResult(context))" />
+                                    }
+                                </div>
+                            </MudTd>
+                        </RowTemplate>
+                        <RowEditingTemplate>
+                            <MudTd DataLabel="STT" Style="text-align: center">@context.Index</MudTd>
+                            <MudTd DataLabel="Đơn vị tàu">
+                                <MudTextField Margin="Margin.Dense" @bind-Value="@context.Name" Required />
+                             </MudTd>
+                             <MudTd DataLabel="Kết quả">@context.ShotTotal viên</MudTd>
+                             <MudTd DataLabel="Ghi chú">
+                                 <MudTextField Margin="Margin.Dense" @bind-Value="@context.Note" />
+                             </MudTd>
+                         </RowEditingTemplate>
+                         <PagerContent>
+                             <MudTablePager />
+                         </PagerContent>
+                     </MudTable>
+                 </MudCardContent>
+                 <MudCardActions Class="@CardActionClass">
+                     <div class="w-100 d-flex flex-row">
+                         <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Label="Tên đơn vị tàu" @bind-Value="@BoatUnitName" ReadOnly="@IsCreatingBoatUnitMission" />
+                         <MudTextField Margin="Margin.Dense" Variant="Variant.Outlined" Lines="3" Class="ms-5" Label="Ghi chú" @bind-Value="@BoatUnitNote" ReadOnly="@IsCreatingBoatUnitMission" />
+                         <div>
+                             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ms-5" OnClick="AddNewBoatUnitMissionResult" Disabled="@IsCreatingBoatUnitMission">Thêm đơn vị tàu</MudButton>
+                         </div>
+                     </div>
+                 </MudCardActions>
+             </MudCard>
+         </div>
+     </div>
+ </div>
+
+ <MudOverlay Visible="ShowDetailBoatShots" DarkBackground>
+    <MudCard Style="min-width: 1900px;">
+        <MudCardHeader Class="d-flex justify-content-between align-items-center">
+            <MudText Typo="Typo.h6">
+                Mô phỏng vết đạn trên bia do đơn vị @(SelectedBoatUnitMissionResult?.Name) bắn
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDetailBoatShots" />
+        </MudCardHeader>
+        <MudCardContent Class="d-flex flex-column">
+            <div class="d-flex flex-row">
+                <div class="flex-grow-1 d-flex flex-column">
+                    <div class="d-flex flex-row mt-1">
+                        <MatHungDan Index="1" ShotCount="@ShotCountAt1" />
+                        <MatHungDan Index="2" ShotCount="@ShotCountAt2" />
+                        <MatHungDan Index="3" ShotCount="@ShotCountAt3" />
+                        <MatHungDan Index="4" ShotCount="@ShotCountAt4" />
+                    </div>
+                    <div class="d-flex flex-row mt-1">
+                        <MatHungDan Index="5" ShotCount="@ShotCountAt5" />
+                        <MatHungDan Index="6" ShotCount="@ShotCountAt6" />
+                        <MatHungDan Index="7" ShotCount="@ShotCountAt7" />
+                        <MatHungDan Index="8" ShotCount="@ShotCountAt8" />
+                    </div>
+                </div>
+                <div class="flex-grow-1 d-flex flex-column">
+                    <div class="d-flex flex-row mt-1">
+                        <MatHungDan Index="9" ShotCount="@ShotCountAt9" />
+                        <MatHungDan Index="10" ShotCount="@ShotCountAt10" />
+                        <MatHungDan Index="11" ShotCount="@ShotCountAt11" />
+                        <MatHungDan Index="12" ShotCount="@ShotCountAt12" />
+                    </div>
+                    <div class="d-flex flex-row mt-1">
+                        <MatHungDan Index="13" ShotCount="@ShotCountAt13" />
+                        <MatHungDan Index="14" ShotCount="@ShotCountAt14" />
+                        <MatHungDan Index="15" ShotCount="@ShotCountAt15" />
+                        <MatHungDan Index="16" ShotCount="@ShotCountAt16" />
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-row">
+                <div class="flex-grow-1">
+                    <MudTable T="BoatUnitShotDetail" Items="@MainBoatUnitShots" Height="400px" Elevation="1" Class="mt-5 mx-3">
+                        <ToolBarContent>
+                            <div class="w-100 d-flex justify-content-center">
+                                <MudText Typo="Typo.h6">
+                                    Mô phỏng vết đạn trên mặt bia chính
+                                </MudText>
+                            </div>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>STT</MudTh>
+                            <MudTh>Thời gian</MudTh>
+                            <MudTh>Vị trí</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="STT" Style="text-align: center">@context.Index</MudTd>
+                            <MudTd DataLabel="Thời gian" Style="text-align: center">@context.Time</MudTd>
+                            <MudTd DataLabel="Vị trí" Style="text-align: center">@context.Position</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </div>
+                <div class="flex-grow-1">
+                    <MudTable T="BoatUnitShotDetail" Items="@SubBoatUnitShots" Height="400px" Elevation="1" Class="mt-5 mx-3">
+                        <ToolBarContent>
+                            <div class="w-100 d-flex justify-content-center">
+                                <MudText Typo="Typo.h6">
+                                    Mô phỏng vết đạn trên mặt bia phụ
+                                </MudText>
+                            </div>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>STT</MudTh>
+                            <MudTh>Thời gian</MudTh>
+                            <MudTh>Vị trí</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="STT" Style="text-align: center">@context.Index</MudTd>
+                            <MudTd DataLabel="Thời gian" Style="text-align: center">@context.Time</MudTd>
+                            <MudTd DataLabel="Vị trí" Style="text-align: center">@context.Position</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </div>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</MudOverlay>
+
+@code {
+    [Parameter]
+    public string? MissionIdStr { get; set; }
+
+    private string Error { get; set; } = "";
+    public readonly NavalMission Mission = new();
+
+    private bool ListBoatUintReadOnly { get; set; } = true;
+    private List<BoatUnitMissionResult> BoatUnitMissionResults { get; set; } = new List<BoatUnitMissionResult>();
+    private string BoatUnitName { get; set; } = "";
+    private string BoatUnitNote { get; set; } = "";
+    private BoatUnitMissionResult BoatUnitMissionResultBeforeEdit = new();
+    private bool IsCreatingBoatUnitMission { get; set; }
+    private bool CanBeDeteleRecord { get; set; }
+    private bool CanBeViewResult { get; set; }
+    private string CardActionClass => CanBeViewResult ? "d-none" : "";
+    public BoatUnitMissionResult? SelectedBoatUnitMissionResult { get; set; }
+
+    private int ShotCountAt1 => SelectedBoatUnitMissionResult?.ShotCounts[0] ?? 0;
+    private int ShotCountAt2 => SelectedBoatUnitMissionResult?.ShotCounts[1] ?? 0;
+    private int ShotCountAt3 => SelectedBoatUnitMissionResult?.ShotCounts[2] ?? 0;
+    private int ShotCountAt4 => SelectedBoatUnitMissionResult?.ShotCounts[3] ?? 0;
+    private int ShotCountAt5 => SelectedBoatUnitMissionResult?.ShotCounts[4] ?? 0;
+    private int ShotCountAt6 => SelectedBoatUnitMissionResult?.ShotCounts[5] ?? 0;
+    private int ShotCountAt7 => SelectedBoatUnitMissionResult?.ShotCounts[6] ?? 0;
+    private int ShotCountAt8 => SelectedBoatUnitMissionResult?.ShotCounts[7] ?? 0;
+    private int ShotCountAt9 => SelectedBoatUnitMissionResult?.ShotCounts[8] ?? 0;
+    private int ShotCountAt10 => SelectedBoatUnitMissionResult?.ShotCounts[9] ?? 0;
+    private int ShotCountAt11 => SelectedBoatUnitMissionResult?.ShotCounts[10] ?? 0;
+    private int ShotCountAt12 => SelectedBoatUnitMissionResult?.ShotCounts[11] ?? 0;
+    private int ShotCountAt13 => SelectedBoatUnitMissionResult?.ShotCounts[12] ?? 0;
+    private int ShotCountAt14 => SelectedBoatUnitMissionResult?.ShotCounts[13] ?? 0;
+    private int ShotCountAt15 => SelectedBoatUnitMissionResult?.ShotCounts[14] ?? 0;
+    private int ShotCountAt16 => SelectedBoatUnitMissionResult?.ShotCounts[15] ?? 0;
+    private bool ViewDetailDisable => SelectedBoatUnitMissionResult is null;
+
+    private bool ShowDetailBoatShots { get; set; }
+    private List<BoatUnitShotDetail> MainBoatUnitShots = new();
+    private List<BoatUnitShotDetail> SubBoatUnitShots = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        if (string.IsNullOrEmpty(MissionIdStr))
+        {
+            Error = "Không tìm thấy thông tin nhiệm vụ với id trống";
+            return;
+        }
+
+        if (!Guid.TryParse(MissionIdStr, out var missionId))
+        {
+            Error = "Không tìm thấy thông tin nhiệm vụ với id sai định dạng";
+            return;
+        }
+
+        var mission = await ApplicationDb.GetNavalMissionById(missionId);
+        if (mission is null)
+        {
+            Error = "Không tìm thấy thông tin nhiệm vụ";
+        }
+        else
+        {
+            Mission.Id = mission.Id;
+            Mission.Name = mission.Name;
+            Mission.NavalUnitId = mission.NavalUnitId;
+            Mission.State = mission.State;
+            Mission.StartAt = mission.StartAt;
+            Mission.Note = mission.Note;
+            Mission.ModifiedAt = mission.ModifiedAt;
+
+            CanBeDeteleRecord = Mission.State == Enums.MissionState.Create;
+            CanBeViewResult = Mission.State != Enums.MissionState.Create;
+            BoatUnitMissionResults.Clear();
+            var boats = await ApplicationDb.GetBoatUnitMissions(Mission.Id);
+            int index = 1;
+            foreach (var boat in boats)
+            {
+                BoatUnitMissionResults.Add(new BoatUnitMissionResult()
+                    {
+                        Id = boat.Id,
+                        Index = index++,
+                        Name = boat.Name,
+                        Note = boat.Note,
+                        ShotTotal = boat.ShotTotal,
+                        MissionId = boat.MissionId,
+                        ShotCounts = boat.ShotCounts,
+                    });
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private void BackupBoatUnitMissionResult(object obj)
+    {
+        if (obj is BoatUnitMissionResult boat)
+        {
+            BoatUnitMissionResultBeforeEdit.Id = boat.Id;
+            BoatUnitMissionResultBeforeEdit.Index = boat.Index;
+            BoatUnitMissionResultBeforeEdit.Name = boat.Name;
+            BoatUnitMissionResultBeforeEdit.ShotTotal = boat.ShotTotal;
+            BoatUnitMissionResultBeforeEdit.Note = boat.Note;
+        }
+    }
+
+    private void ResetItemToOriginalValues(object obj)
+    {
+        if (obj is BoatUnitMissionResult boat && boat.Id == BoatUnitMissionResultBeforeEdit.Id)
+        {
+            boat.Name = BoatUnitMissionResultBeforeEdit.Name;
+            boat.Note = BoatUnitMissionResultBeforeEdit.Note;
+        }
+    }
+
+    private async Task AddNewBoatUnitMissionResult()
+    {
+        string note = BoatUnitNote;
+        string name = BoatUnitName;
+        BoatUnitName = "";
+        BoatUnitNote = "";
+
+        if (Mission is null) return;
+
+        if (string.IsNullOrEmpty(name))
+        {
+            Snackbar.Add("Tên đơn vị không được để trống", Severity.Error);
+            return;
+        }
+
+        if (BoatUnitMissionResults.Any(u => u.Name == name))
+        {
+            Snackbar.Add("Tên đơn vị bị trùng", Severity.Error);
+            return;
+        }
+
+        IsCreatingBoatUnitMission = true;
+        StateHasChanged();
+
+        var result = await ApplicationDb.CreateNewBoatUnitMission(Mission.Id, name, note);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else if (result.Value is null)
+        {
+            Snackbar.Add("Lỗi dữ liệu tạo đơn vị mới", Severity.Error);
+        }
+        else
+        {
+            BoatUnitMissionResults.Add(new BoatUnitMissionResult()
+                {
+                    Id = result.Value.Id,
+                    Index = BoatUnitMissionResults.Count + 1,
+                    Name = result.Value.Name,
+                    Note = result.Value.Note,
+                });
+        }
+
+        IsCreatingBoatUnitMission = false;
+
+        StateHasChanged();
+    }
+
+    private void BoatUnitMissionResultHasBeenCommitted(object obj)
+    {
+        if (obj is BoatUnitMissionResult boat && boat.Id == BoatUnitMissionResultBeforeEdit.Id)
+        {
+            if (string.IsNullOrEmpty(boat.Name))
+            {
+                boat.Name = BoatUnitMissionResultBeforeEdit.Name;
+                boat.Note = BoatUnitMissionResultBeforeEdit.Note;
+
+                Snackbar.Add("Tên đơn vị tàu không được để trống", Severity.Error);
+                StateHasChanged();
+                return;
+            }
+
+            if (BoatUnitMissionResults.Any(u => u.Name == boat.Name && u.Index != boat.Index))
+            {
+                boat.Name = BoatUnitMissionResultBeforeEdit.Name;
+                boat.Note = BoatUnitMissionResultBeforeEdit.Note;
+
+                Snackbar.Add($"Tên đơn vị tàu {boat.Name} bị trùng", Severity.Error);
+                StateHasChanged();
+                return;
+            }
+            _ = InvokeAsync(async () =>
+            {
+                var result = await ApplicationDb.UpdateBoatUnitMissionInfo(boat.Id, boat.Name, boat.Note);
+                if (!result.IsSuccess)
+                {
+                    boat.Name = BoatUnitMissionResultBeforeEdit.Name;
+                    boat.Note = BoatUnitMissionResultBeforeEdit.Note;
+                    StateHasChanged();
+                    Snackbar.Add(result.Message, Severity.Error);
+                }
+            });
+        }
+    }
+
+    private void OnSelectedBoatUnitMissionResultChanged(BoatUnitMissionResult element)
+    {
+        if (element == SelectedBoatUnitMissionResult) return;
+
+        SelectedBoatUnitMissionResult = element;
+        StateHasChanged();
+    }
+
+    private string SelectedBoatUnitMissionResultClassFunc(BoatUnitMissionResult? element, int rowNumber)
+    {
+        return element is not null && SelectedBoatUnitMissionResult is not null && element.Id == SelectedBoatUnitMissionResult.Id ? "boat-unit-selected" : string.Empty;
+    }
+
+    private async Task DeleteBoatUnitMissionResult(BoatUnitMissionResult boat)
+    {
+        bool? confirm = await DialogService.ShowMessageBox("Xóa đơn vị tàu", $"Xác nhận xóa đơn vị tàu {boat.Name}?", yesText: "Delete", cancelText: "Cancel");
+        if (confirm is null) return;
+
+        var result = await ApplicationDb.DeleteBoatUnitMission(boat.Id);
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else
+        {
+            var index = BoatUnitMissionResults.IndexOf(boat);
+            BoatUnitMissionResults.Remove(boat);
+            for (int i = index; i < BoatUnitMissionResults.Count; i++)
+            {
+                BoatUnitMissionResults[i].Index--;
+            }
+
+            Snackbar.Add(result.Message, Severity.Success);
+            StateHasChanged();
+        }
+    }
+
+    private void ViewDetail()
+    {
+        ShowDetailBoatShots = true;
+    }
+
+    private void CloseDetailBoatShots()
+    {
+        ShowDetailBoatShots = false;
+    }
+}

@@ -1,0 +1,98 @@
+﻿@implements IDisposable
+
+@using MARM.Services
+
+@inject ILightController LightCtl
+
+<div class="m-4">
+    <MudCard Elevation="6">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4">Điều khiển các thiết bị</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex flex-row align-items-center">
+            <img src="images/Picture2.png" alt="device" />
+            <div class="d-flex flex-column mx-5">
+                <LightButton Label="Đèn 1" State=@LightStates[0] Click="ToggleLight1" />
+                <LightButton Label="Đèn 2" State=@LightStates[1] Click="ToggleLight2"  />
+                <LightButton Label="Đèn 3" State=@LightStates[2] Click="ToggleLight3" />
+                <LightButton Label="Đèn 4" State=@LightStates[3] Click="ToggleLight4" />
+            </div>
+        </MudCardContent>
+    </MudCard>
+</div>
+
+@code {
+    private bool[] LightStates = new bool[] { false, false, false, false };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        LightStates[0] = LightCtl.Light1;
+        LightStates[1] = LightCtl.Light2;
+        LightStates[2] = LightCtl.Light3;
+        LightStates[3] = LightCtl.Light4;
+
+        LightCtl.LightStateChanged += OnLightStateChanged;
+    }
+
+    private void OnLightStateChanged(int index, bool state)
+    {
+        if (LightStates[index] == state) return;
+
+        LightStates[index] = state;
+        StateHasChanged();
+    }
+
+    private async Task ToggleLight1()
+    {
+        if (LightStates[0])
+        {
+            await LightCtl.TurnOffLight(0);
+        }
+        else
+        {
+            await LightCtl.TurnOnLight(0);
+        }
+    }
+    private async Task ToggleLight2()
+    {
+        if (LightStates[1])
+        {
+            await LightCtl.TurnOffLight(1);
+        }
+        else
+        {
+            await LightCtl.TurnOnLight(1);
+        }
+    }
+    private async Task ToggleLight3()
+    {
+        if (LightStates[2])
+        {
+            await LightCtl.TurnOffLight(2);
+        }
+        else
+        {
+            await LightCtl.TurnOnLight(2);
+        }
+    }
+    private async Task ToggleLight4()
+    {
+        if (LightStates[3])
+        {
+            await LightCtl.TurnOffLight(3);
+        }
+        else
+        {
+            await LightCtl.TurnOnLight(3);
+        }
+    }
+
+    public void Dispose()
+    {
+        LightCtl.LightStateChanged -= OnLightStateChanged;
+    }
+}

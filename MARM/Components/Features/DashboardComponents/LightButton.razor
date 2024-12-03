@@ -1,0 +1,23 @@
+﻿<div class="my-2 mx-10" @onclick="Click">
+    <div class="@Class">
+        <div>ΟΙ</div><b></b>
+        <span class="indicator"></span>
+    </div>
+    <span class="btn-label" >@Label</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = null!;
+
+    [Parameter]
+    public bool State { get; set; }
+
+    [Parameter]
+    public EventCallback Click { get; set; }
+
+    private string Class => $"checkboxControl{(State ? " on" : " off")}";
+
+    private Task OnClick() => Click.InvokeAsync();
+
+}

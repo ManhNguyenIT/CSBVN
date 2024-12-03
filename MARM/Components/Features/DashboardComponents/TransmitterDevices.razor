@@ -1,0 +1,85 @@
+﻿@implements IDisposable
+
+@using MARM.Services
+
+@inject ITransmitterDeviceManager TransmitterDeviceManager
+
+<div class="m-4">
+    <MudCard Elevation="6">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4">
+                    Dung lượng pin của các khối phát
+                </MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex flex-column">
+            <div class="d-flex flex-row align-items-center">
+                <div style="width: 250px;">
+                    <MudText Typo="Typo.h6">
+                        Pin khối phát 1
+                    </MudText>
+                </div>
+
+                <MudProgressLinear Color="@BatteryColor1" Striped="true" Size="Size.Large" Value="@BatteryLevel1" Class="ms-5">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                        <b>@(BatteryLevel1)%</b>
+                    </MudText>
+                </MudProgressLinear>
+            </div>
+            <div class="mt-5 d-flex flex-row align-items-center">
+                <div style="width: 250px;">
+                    <MudText Typo="Typo.h6">
+                        Pin khối phát 2
+                    </MudText>
+                </div>
+                <MudProgressLinear Color="@BatteryColor2" Striped="true" Size="Size.Large" Value="@BatteryLevel2" Class="ms-5">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                        <b>@(BatteryLevel2)%</b>
+                    </MudText>
+                </MudProgressLinear>
+            </div>
+        </MudCardContent>
+    </MudCard>
+</div>
+
+@code {
+    private int BatteryLevel1 { get; set; }
+    private int BatteryLevel2 { get; set; }
+
+    private Color BatteryColor1 => GetColorByLevel(BatteryLevel1);
+    private Color BatteryColor2 => GetColorByLevel(BatteryLevel2);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        BatteryLevel1 = TransmitterDeviceManager.BatteryLevel1;
+        BatteryLevel2 = TransmitterDeviceManager.BatteryLevel2;
+
+        TransmitterDeviceManager.BatteryLevelChanged += OnBatteryLevelChanged;
+    }
+
+    private Color GetColorByLevel(int level)
+    {
+        if (level > 75) return Color.Primary;
+        if (level > 50) return Color.Success;
+        if (level > 25) return Color.Warning;
+        return Color.Error;
+    }
+
+    private void OnBatteryLevelChanged(int level1, int level2)
+    {
+        _ = InvokeAsync(() =>
+        {
+            BatteryLevel1 = level1;
+            BatteryLevel2 = level2;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        TransmitterDeviceManager.BatteryLevelChanged -= OnBatteryLevelChanged;
+    }
+}

@@ -1,0 +1,247 @@
+﻿@using MARM.Data;
+
+@inject ApplicationDbContext ApplicationDb
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudCard Elevation="6" Class="h-100">
+    <MudCardHeader Class="align-items-center">
+        <CardHeaderContent>
+            <MudText>Quản lý đơn vị</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Style="margin-top: 8px;" Size="Size.Small" Icon="@Icons.Material.Filled.Add" OnClick="@(()=> OpenCreateNewNavalUnitForm())" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="w-100 h-100 position-relative overflow-hidden">
+        <MudTreeView Class="w-100 h-100 position-absolute top-0 start-0 overflow-auto" Items="NavalUnits" Hover Dense>
+            <ItemTemplate>
+                <MudTreeViewItem OnClick="@(() => SelectNavalUnit(context))" T="NavalUnitModel" @bind-Expanded="@context.IsExpanded" @bind-Selected="@context.IsSelected" Items="context.AffiliatedUnits" Value="context">
+                    <Content>
+                        <div class="naval-unit-item @(context.IsSelected ? "selected" : "")">
+                            <MudTreeViewItemToggleButton Expanded="@context.IsExpanded" Visible="@context.HasChild" ExpandedChanged="@(expanded => LoadChildrenNavalUnits(expanded, context))" />
+                            <MudMenu Class="flex-grow-1" Style="height: 32px;" Dense ActivationEvent="@MouseEvent.RightClick" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.CenterLeft">
+                                 <ActivatorContent>
+                                     <div class="d-flex align-items-center">
+                                         <MudText Class="w-100" st>@context.Name</MudText>
+                                     </div>
+                                 </ActivatorContent>
+                                 <ChildContent>
+                                     <MudMenuItem Icon="@Icons.Material.Filled.Add" OnClick="@(()=> OpenCreateNewNavalUnitForm(context))">Tạo đơn vị</MudMenuItem>
+                                     <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => DeleteNavalUnit(context))">Xóa</MudMenuItem>
+                                 </ChildContent>
+                             </MudMenu>
+                         </div>
+                     </Content>
+                 </MudTreeViewItem>
+             </ItemTemplate>
+         </MudTreeView>
+     </MudCardContent>
+ </MudCard>
+
+ <MudOverlay Visible="IsCreateNavalUnitFormVisible" DarkBackground AutoClose="false">
+     <MudCard Style="min-width: 500px;">
+         <MudCardHeader>
+             <MudText Typo="Typo.h6">
+                 Tạo đơn vị mới @(CreateNavalUnitModelParent is null ? "" : $" thuộc đơn vị {CreateNavalUnitModelParent.Name}")
+            </MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTextField Class="my-5 mx-2" @bind-Value="CreateNavalUnitName" Label="Tên đơn vị" />
+        </MudCardContent>
+        <MudCardActions Class="d-flex flex-row-reverse">
+            <MudButton Color="Color.Error" Class="mx-2" Disabled="@IsCreatingNavalUnit" OnClick="CancelCreateNavalUnit">Cancel</MudButton>
+            <MudButton Color="Color.Primary" Class="mx-2" Disabled="@IsCreatingNavalUnit" Variant="Variant.Filled" OnClick="CreateNewNavalUnit">Create</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudOverlay>
+
+@code {
+    private HashSet<NavalUnitModel> NavalUnits = new HashSet<NavalUnitModel>();
+
+
+    [Parameter]
+    public NavalUnitModel? SelectedNavalUnit { get; set; }
+
+    [Parameter]
+    public EventCallback<NavalUnitModel> SelectedNavalUnitChanged { get; set; }
+
+    private bool IsCreatingNavalUnit { get; set; } = false;
+    private bool IsCreateNavalUnitFormVisible { get; set; } = false;
+    private NavalUnitModel? CreateNavalUnitModelParent;
+    private string? CreateNavalUnitName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var units = await ApplicationDb.GetNavalUnits(Guid.Empty);
+        foreach (var unit in units)
+        {
+            NavalUnits.Add(new NavalUnitModel()
+                {
+                    Id = unit.Id,
+                    Name = unit.Name,
+                    IsExpanded = false,
+                    IsAffiliateLoaded = false,
+                    HasChild = true,
+                    Parent = null,
+                });
+        }
+        StateHasChanged();
+    }
+
+    public async Task SelectNavalUnit(NavalUnitModel unit)
+    {
+        if (SelectedNavalUnit == unit) return;
+
+        if (SelectedNavalUnit is not null)
+        {
+            SelectedNavalUnit.IsSelected = false;
+        }
+
+        SelectedNavalUnit = unit;
+        SelectedNavalUnit.IsSelected = true;
+        StateHasChanged();
+
+        await SelectedNavalUnitChanged.InvokeAsync(SelectedNavalUnit);
+    }
+
+    public async Task LoadChildrenNavalUnits(bool expaned, NavalUnitModel parentNode)
+    {
+        if (!parentNode.IsAffiliateLoaded)
+        {
+            parentNode.IsAffiliateLoaded = true;
+            var units = await ApplicationDb.GetNavalUnits(parentNode.Id);
+            foreach (var unit in units)
+            {
+                parentNode.AffiliatedUnits.Add(new NavalUnitModel()
+                    {
+                        Id = unit.Id,
+                        Name = unit.Name,
+                        IsExpanded = false,
+                        IsAffiliateLoaded = false,
+                        HasChild = true,
+                        Parent = parentNode,
+                    });
+            }
+
+            parentNode.HasChild = parentNode.AffiliatedUnits.Any();
+            StateHasChanged();
+        }
+        parentNode.IsExpanded = expaned;
+    }
+
+    private void OpenCreateNewNavalUnitForm(NavalUnitModel? parent = null)
+    {
+        CreateNavalUnitModelParent = parent;
+        CreateNavalUnitName = "";
+        IsCreateNavalUnitFormVisible = true;
+        IsCreatingNavalUnit = false;
+    }
+
+    private void CancelCreateNavalUnit()
+    {
+        IsCreateNavalUnitFormVisible = false;
+    }
+
+    private async Task CreateNewNavalUnit()
+    {
+        if (string.IsNullOrEmpty(CreateNavalUnitName))
+        {
+            Snackbar.Add("Tên đơn vị không được để trống", Severity.Error);
+            return;
+        }
+
+        IsCreatingNavalUnit = true;
+        StateHasChanged();
+
+        var result = await ApplicationDb.CreateNavalUnit(CreateNavalUnitModelParent?.Id ?? Guid.Empty, CreateNavalUnitName);
+
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else if (result.Value is null)
+        {
+            Snackbar.Add("Lỗi dữ liệu tạo đơn vị mới", Severity.Error);
+        }
+        else
+        {
+            IsCreateNavalUnitFormVisible = false;
+            if (CreateNavalUnitModelParent is null)
+            {
+                NavalUnits.Add(new NavalUnitModel()
+                    {
+                        Id = result.Value.Id,
+                        Name = result.Value.Name,
+                        IsExpanded = false,
+                        IsAffiliateLoaded = false,
+                        HasChild = false,
+                        Parent = null,
+                    });
+            }
+            else
+            {
+                if (CreateNavalUnitModelParent.IsAffiliateLoaded)
+                {
+                    CreateNavalUnitModelParent.AffiliatedUnits.Add(new NavalUnitModel()
+                        {
+                            Id = result.Value.Id,
+                            Name = result.Value.Name,
+                            IsExpanded = false,
+                            IsAffiliateLoaded = false,
+                            HasChild = false,
+                            Parent = CreateNavalUnitModelParent,
+                        });
+
+                    CreateNavalUnitModelParent.HasChild = true;
+                }
+                else
+                {
+                    await LoadChildrenNavalUnits(true, CreateNavalUnitModelParent);
+                }
+
+
+            }
+
+            Snackbar.Add(result.Message, Severity.Success);
+        }
+
+        IsCreatingNavalUnit = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteNavalUnit(NavalUnitModel unit)
+    {
+        bool? confirm = await DialogService.ShowMessageBox("Xóa đơn vị", $"Xác nhận xóa đơn vị {unit.Name}?", yesText: "Delete", cancelText: "Cancel");
+        if (confirm is null) return;
+
+        var result = await ApplicationDb.DeleteNavalUnit(unit.Id);
+        if (!result.IsSuccess)
+        {
+            Snackbar.Add(result.Message, Severity.Error);
+        }
+        else
+        {
+            if (unit.Parent is null)
+            {
+                NavalUnits.Remove(unit);
+            }
+            else
+            {
+                unit.Parent.AffiliatedUnits.Remove(unit);
+                unit.Parent.HasChild = unit.Parent.AffiliatedUnits.Any();
+            }
+
+            if (SelectedNavalUnit == unit)
+            {
+                SelectedNavalUnit = null;
+                await SelectedNavalUnitChanged.InvokeAsync(SelectedNavalUnit);
+            }
+
+            Snackbar.Add(result.Message, Severity.Success);
+            StateHasChanged();
+        }
+    }
+}

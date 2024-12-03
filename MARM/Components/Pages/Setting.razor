@@ -1,0 +1,323 @@
+﻿@using MARM.Services
+@inherits LayoutComponentBase
+
+@page "/setting"
+
+<PageTitle>Setting</PageTitle>
+
+@inject IComDataService comService
+@inject IDataSendService dataSender
+@inject IDataSettingService dataSetting
+
+<div class="w-100 h-100 d-flex flex-column">
+    <div class="d-flex flex-row justify-content-between">
+        <div class="d-flex flex-row align-items-center">
+            <div class="mx-5">
+                <img src="images/setting.png" height="60" alt="setting" />
+            </div>
+            <MudText Typo="Typo.h4">
+                Cài đặt
+            </MudText>
+        </div>
+        <img src="images/Picture2.png" class="me-10" height="100" alt="device" />
+    </div>
+    <div class="flex-grow-1 w-100 position-relative overflow-hidden">
+        <div class="w-100 h-100 p-3 position-absolute top-0 start-0" style="overflow-x: hidden; overflow-y: auto;">
+            <MudExpansionPanels MultiExpansion="true">
+                <MudExpansionPanel @bind-IsExpanded="IsExpanded0">
+                    <TitleContent>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <MudText Typo="Typo.h5">Sử dụng khối phát</MudText>
+                            <div class="d-flex">
+                                @if (EditTransmit)
+                                {
+                                    <MudButton Size="Size.Small" OnClick="CancelEditTransmit" Class="me-5">Cancel</MudButton>
+                                    <MudButton Size="Size.Small" Variant="Variant.Filled" Class="me-5" Color="Color.Primary" OnClick="UpdateTransmit">Update</MudButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Class="me-5" Size="Size.Small" Color="Color.Primary" OnClick="EnableEditTransmit" />
+                                }
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="w-100 d-flex flex-row">
+                            <div class="flex-grow-1 d-flex flex-column">
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Khối phát 1</MudText>
+                                    <MudSwitch @bind-Checked="@Transmit1" ReadOnly="@(!EditTransmit)" Size="Size.Large" Color="Color.Success" UnCheckedColor="Color.Error" />
+                                </div>
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Khối phát 2</MudText>
+                                    <MudSwitch @bind-Checked="@Transmit2" ReadOnly="@(!EditTransmit)" Size="Size.Large" Color="Color.Success" UnCheckedColor="Color.Error" />
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 d-flex flex-column">
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Khối phát 3</MudText>
+                                    <MudSwitch @bind-Checked="@Transmit3" ReadOnly="@(!EditTransmit)" Size="Size.Large" Color="Color.Success" UnCheckedColor="Color.Error" />
+                                </div>
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Khối phát 4</MudText>
+                                    <MudSwitch @bind-Checked="@Transmit4" ReadOnly="@(!EditTransmit)" Size="Size.Large" Color="Color.Success" UnCheckedColor="Color.Error" />
+                                </div>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel @bind-IsExpanded="IsExpanded1">
+                    <TitleContent>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <MudText Typo="Typo.h6">Thời gian giữa các xung</MudText>
+                            <div class="d-flex">
+                                @if (EditFrequency)
+                                {
+                                    <MudButton Size="Size.Small" OnClick="CancelEditFrequency" Class="me-5">Cancel</MudButton>
+                                    <MudButton Size="Size.Small" Variant="Variant.Filled" Class="me-5" Color="Color.Primary" OnClick="UpdateFrequency">Update</MudButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Class="me-5" Size="Size.Small" Color="Color.Primary" OnClick="EnableEditFrequency" />
+                                }
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <div>
+                            <MudNumericField T="int" ReadOnly="@(!EditFrequency)" @bind-Value="TimerInterval" Label="Chu kỳ (ms)" Variant="Variant.Outlined" Step="1" />
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel @bind-IsExpanded="IsExpanded2">
+                    <TitleContent>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <MudText Typo="Typo.h6">Chế độ đèn</MudText>
+                            <div class="d-flex">
+                                @if (EditLightMode)
+                                {
+                                    <MudButton Size="Size.Small" OnClick="CancelEditLightMode" Class="me-5">Cancel</MudButton>
+                                    <MudButton Size="Size.Small" Variant="Variant.Filled" Class="me-5" Color="Color.Primary" OnClick="UpdateLightMode">Update</MudButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Class="me-5" Size="Size.Small" Color="Color.Primary" OnClick="EnableEditLightMode" />
+                                }
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="w-100 d-flex flex-row">
+                            <div class="flex-grow-1 d-flex flex-column">
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Đèn 1</MudText>
+                                    <MudRadioGroup @bind-SelectedOption="@Light1Mode" ReadOnly="@(!EditLightMode)">
+                                        <MudRadio Option="0">Bình thường</MudRadio>
+                                        <MudRadio Option="1">Nhấp nháy</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Đèn 2</MudText>
+                                    <MudRadioGroup @bind-SelectedOption="@Light2Mode" ReadOnly="@(!EditLightMode)">
+                                        <MudRadio Option="0">Bình thường</MudRadio>
+                                        <MudRadio Option="1">Nhấp nháy</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 d-flex flex-column">
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Đèn 3</MudText>
+                                    <MudRadioGroup @bind-SelectedOption="@Light3Mode" ReadOnly="@(!EditLightMode)">
+                                        <MudRadio Option="0">Bình thường</MudRadio>
+                                        <MudRadio Option="1">Nhấp nháy</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                                <div class="d-flex flex-row align-items-center">
+                                    <MudText Typo="Typo.h6" Class="mx-3">Đèn 4</MudText>
+                                    <MudRadioGroup @bind-SelectedOption="@Light4Mode" ReadOnly="@(!EditLightMode)">
+                                        <MudRadio Option="0">Bình thường</MudRadio>
+                                        <MudRadio Option="1">Nhấp nháy</MudRadio>
+                                    </MudRadioGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <MudExpansionPanel @bind-IsExpanded="IsExpanded3">
+                    <TitleContent>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <MudText Typo="Typo.h6">Cài đặt kết nối</MudText>
+                            <div class="d-flex">
+                                @if (EditComPort)
+                                {
+                                    <MudButton Size="Size.Small" OnClick="CancelEditComPort" Class="me-5">Cancel</MudButton>
+                                    <MudButton Size="Size.Small" Variant="Variant.Filled" Class="me-5" Color="Color.Primary" OnClick="UpdateComPort">Update</MudButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Class="me-5" Size="Size.Small" Color="Color.Primary" OnClick="EnableEditComPort" />
+                                }
+                            </div>
+                        </div>
+                    </TitleContent>
+                    <ChildContent>
+                        <div>
+                            <MudTextField T="string" ReadOnly="@(!EditComPort)" @bind-Value="Port" Label="Port" Required="true" Variant="Variant.Outlined" Step="1"  />
+                            <MudNumericField T="int" ReadOnly="@(!EditComPort)" @bind-Value="Baudrate" Label="Baudrate" Required="true" Variant="Variant.Outlined" Step="1" />
+                            <MudButton OnClick="ConnectClick" ReadOnly="@(!EditComPort)" Variant="Variant.Filled" Color="Color.Secondary">Connect</MudButton>
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool EditTransmit { get; set; } = false;
+    private bool Transmit1 { get; set; } = true;
+    private bool Transmit2 { get; set; }
+    private bool Transmit3 { get; set; }
+    private bool Transmit4 { get; set; }
+    private bool ResetTransmit1 { get; set; }
+    private bool ResetTransmit2 { get; set; }
+    private bool ResetTransmit3 { get; set; }
+    private bool ResetTransmit4 { get; set; }
+
+    private bool IsExpanded0 { get; set; } = true;
+    private bool IsExpanded1 { get; set; } = true;
+    private bool IsExpanded2 { get; set; } = true;
+    private bool IsExpanded3 { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!comService.IsConnected()) IsExpanded3 = true;
+        Transmit1 = dataSetting.Transmit1;
+        Transmit2 = dataSetting.Transmit2;
+        Transmit3 = dataSetting.Transmit3;
+        Transmit4 = dataSetting.Transmit4;
+
+        Light1Mode = dataSetting.Light1Mode;
+        Light2Mode = dataSetting.Light2Mode;
+        Light3Mode = dataSetting.Light3Mode;
+        Light4Mode = dataSetting.Light4Mode;
+
+        TimerInterval = dataSetting.TimerInterval;
+
+        Port = dataSetting.Port;
+        Baudrate = dataSetting.Baudrate;
+    }
+
+    private void EnableEditTransmit()
+    {
+        ResetTransmit1 = Transmit1;
+        ResetTransmit2 = Transmit2;
+        ResetTransmit3 = Transmit3;
+        ResetTransmit4 = Transmit4;
+        EditTransmit = true;
+    }
+
+    private void CancelEditTransmit()
+    {
+        Transmit1 = ResetTransmit1;
+        Transmit2 = ResetTransmit2;
+        Transmit3 = ResetTransmit3;
+        Transmit4 = ResetTransmit4;
+        EditTransmit = false;
+    }
+
+    private void UpdateTransmit()
+    {
+        EditTransmit = false;
+    }
+
+
+    private bool EditFrequency { get; set; } = false;
+
+    private int TimerInterval { get; set; } = 500;
+    private int ResetTimerInterval { get; set; } = 500;
+
+    private void EnableEditFrequency()
+    {
+        ResetTimerInterval = TimerInterval;
+        EditFrequency = true;
+    }
+
+    private void CancelEditFrequency()
+    {
+        TimerInterval = ResetTimerInterval;
+        EditFrequency = false;
+    }
+
+    private void UpdateFrequency()
+    {
+        EditFrequency = false;
+    }
+
+    private bool EditComPort { get; set; } = false;
+    private int Baudrate { get; set; } = 57600;
+    private int ResetBaudrate { get; set; } = 57600;
+    private string Port { get; set; } = "COM16";
+    private string ResetPort { get; set; } = "COM16";
+
+    private void EnableEditComPort()
+    {
+        ResetBaudrate = Baudrate;
+        ResetPort = Port;
+        EditComPort = true;
+    }
+
+    private void CancelEditComPort()
+    {
+        Port = ResetPort;
+        Baudrate = ResetBaudrate;
+        EditComPort = false;
+    }
+
+    private void UpdateComPort()
+    {
+        EditComPort = false;
+    }
+
+    private void ConnectClick()
+    {
+        comService.Open(Port, Baudrate);
+        if (comService.IsConnected()) EditComPort = false;
+        else EditComPort = true;
+    }
+
+
+    private bool EditLightMode { get; set; } = false;
+    private int Light1Mode { get; set; }
+    private int Light2Mode { get; set; }
+    private int Light3Mode { get; set; }
+    private int Light4Mode { get; set; }
+    private int ResetLight1Mode { get; set; }
+    private int ResetLight2Mode { get; set; }
+    private int ResetLight3Mode { get; set; }
+    private int ResetLight4Mode { get; set; }
+
+    private void EnableEditLightMode()
+    {
+        ResetLight1Mode = Light1Mode;
+        ResetLight2Mode = Light2Mode;
+        ResetLight3Mode = Light3Mode;
+        ResetLight4Mode = Light4Mode;
+        EditLightMode = true;
+    }
+
+    private void CancelEditLightMode()
+    {
+        Light1Mode = ResetLight1Mode;
+        Light2Mode = ResetLight2Mode;
+        Light3Mode = ResetLight3Mode;
+        Light4Mode = ResetLight4Mode;
+        EditLightMode = false;
+    }
+
+    private void UpdateLightMode()
+    {
+        EditLightMode = false;
+    }
+}

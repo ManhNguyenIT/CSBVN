@@ -1,0 +1,65 @@
+﻿@implements IDisposable
+
+@using AK.Enums;
+@using AK.Services;
+
+@inject ITargetConnectStateManager TargetConnectManager
+
+<div class="m-4">
+    <MudCard Elevation="6" Style="@Style">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4">Mặt bia chính</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex flex-row align-items-center">
+            <MudText Typo="Typo.h6">Trạng thái kêt nối</MudText>
+            @if (ConnectState == TargetConnectState.Lost)
+            {
+                    <div class="d-flex justify-content-end" style="width: 70px;">
+                        <span class="mdi mdi-wifi-strength-off-outline mdi-36px" style="color: #EA7C31;"></span>
+                    </div>
+                    <div style="width: 120px; margin-left: 5px;">
+                        <span>Mất kết nối</span>
+                    </div>
+            }
+            else if (ConnectState == TargetConnectState.Good)
+            {
+                    <div class="d-flex justify-content-end" style="width: 70px;">
+                        <span class="mdi mdi-wifi mdi-36px" style="color: #03AAE7;"></span>
+                    </div>
+                    <div style="width: 120px; margin-left: 5px;">
+                        <span>Kết nối tốt</span>
+                    </div>
+            }
+        </MudCardContent>
+    </MudCard>
+</div>
+
+
+@code {
+    private TargetConnectState ConnectState { get; set; }
+    private string Style => ConnectState == TargetConnectState.Lost ? "background-color: rgba(234, 124, 49, 0.1)" : "background-color: rgba(6, 165, 224, 0.1)";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ConnectState = TargetConnectManager.MainTargetConnectState;
+        TargetConnectManager.MainTargetConnectStateChanged += OnValueChanged;
+    }
+
+    private void OnValueChanged(TargetConnectState state)
+    {
+        _ = InvokeAsync(() =>
+        {
+            if (ConnectState == state) return;
+            ConnectState = state;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        TargetConnectManager.MainTargetConnectStateChanged -= OnValueChanged;
+    }
+}

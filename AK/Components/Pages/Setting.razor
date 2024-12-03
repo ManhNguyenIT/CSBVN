@@ -1,0 +1,265 @@
+﻿@using AK.Services
+@inherits LayoutComponentBase
+
+@page "/setting"
+
+<PageTitle>Setting</PageTitle>
+
+@inject IComDataService comService
+@inject IDataSendService dataSender
+@inject IDataSettingService dataSetting
+
+<div class="w-100 h-100 d-flex flex-column">
+    <div class="line-vertical bg-primary"></div>
+    <div class="d-flex flex-row justify-content-between">
+        <div class="d-flex flex-row align-items-center">
+            <div class="mx-5" style="z-index: 2;">
+                <img src="images/setting.png" height="60" alt="setting" />
+            </div>
+            <div style="margin-left: -50px; z-index: 1" class="bg-white fs-3 p-2 ps-10 pe-5 fw-bold rounded border-primary border-top border-end border-bottom">
+                Cài đặt
+            </div>
+        </div>
+        <img src="images/Picture2.png" class="me-10" height="100" alt="device" />
+    </div>
+    <div class="flex-grow-1 w-100 position-relative overflow-hidden">
+        <div class="w-100 h-100 p-3 position-absolute top-0 start-0" style="overflow-x: hidden; overflow-y: auto;">
+            <form class="ps-15 g-1">
+                <div class="row mb-5">
+                    <div class="col-2 d-flex align-items-end">
+                        <div class="bg-white me-3 border border-primary p-2 ps-10 pe-10 rounded">Thông số bộ phát</div>
+                    </div>
+                    <div class="form-floating col-1">
+                        <input type="number" class="form-control border-primary" id="t1" placeholder="Time T1">
+                        <label for="t1">Time T1</label>
+                    </div>
+                    <div class="form-floating col-1">
+                        <input type="number" class="form-control border-primary" id="t2" placeholder="Time T2">
+                        <label for="t2">Time T2</label>
+                    </div>
+                    <div class="form-floating col-1">
+                        <input type="number" class="form-control border-primary" id="t3" placeholder="Time T3">
+                        <label for="t3">Time T3</label>
+                    </div>
+                    <div class="form-floating col-1">
+                        <input type="number" class="form-control border-primary" id="t4" placeholder="Time T4">
+                        <label for="t4">Time T4</label>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-2 d-flex align-items-end">
+                        <div class="bg-white me-3 border border-primary p-2 ps-10 pe-10 rounded">Chọn sử dụng Dải</div>
+                    </div>
+                    <div class="btn-group col-1" role="group" aria-label="D1">
+                        <input type="checkbox" class="btn-check" id="d1" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="d1">D1</label>
+                    </div>
+                    <div class="btn-group col-1" role="group" aria-label="D2">
+                        <input type="checkbox" class="btn-check" id="d2" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="d2">D2</label>
+                    </div>
+                    <div class="btn-group col-1" role="group" aria-label="D3">
+                        <input type="checkbox" class="btn-check" id="d3" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="d3">D3</label>
+                    </div>
+                    <div class="btn-group col-1" role="group" aria-label="D4">
+                        <input type="checkbox" class="btn-check" id="d4" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="d4">D4</label>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="fs-5 ps-15 fw-bolder">
+                        Dung lượng pin của các khối phát
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white me-3 border border-primary p-2 ps-5 pe-5 rounded">Pin khối phát 1</div>
+                        <div class="parallelogram bg-danger"><span>25%</span></div>
+                        <div class="parallelogram bg-warning"><span>50%</span></div>
+                        <div class="parallelogram bg-success"><span>75%</span></div>
+                        <div class="parallelogram bg-primary"><span>100%</span></div>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white me-3 border border-primary p-2 ps-5 pe-5 rounded">Pin khối phát 2</div>
+                        <div class="parallelogram bg-danger"><span>25%</span></div>
+                        <div class="parallelogram bg-warning"><span>50%</span></div>
+                        <div class="parallelogram bg-success"><span>75%</span></div>
+                        <div class="parallelogram bg-primary"><span>100%</span></div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white me-3 border border-primary p-2 ps-5 pe-5 rounded">Pin khối phát 3</div>
+                        <div class="parallelogram bg-danger"><span>25%</span></div>
+                        <div class="parallelogram bg-warning"><span>50%</span></div>
+                        <div class="parallelogram bg-success"><span>75%</span></div>
+                        <div class="parallelogram bg-primary"><span>100%</span></div>
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white me-3 border border-primary p-2 ps-5 pe-5 rounded">Pin khối phát 4</div>
+                        <div class="parallelogram bg-danger"><span>25%</span></div>
+                        <div class="parallelogram bg-warning"><span>50%</span></div>
+                        <div class="parallelogram bg-success"><span>75%</span></div>
+                        <div class="parallelogram bg-primary"><span>100%</span></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool EditTransmit { get; set; } = false;
+    private bool Transmit1 { get; set; } = true;
+    private bool Transmit2 { get; set; }
+    private bool Transmit3 { get; set; }
+    private bool Transmit4 { get; set; }
+    private bool ResetTransmit1 { get; set; }
+    private bool ResetTransmit2 { get; set; }
+    private bool ResetTransmit3 { get; set; }
+    private bool ResetTransmit4 { get; set; }
+
+    private bool IsExpanded0 { get; set; } = true;
+    private bool IsExpanded1 { get; set; } = true;
+    private bool IsExpanded2 { get; set; } = true;
+    private bool IsExpanded3 { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        if (!comService.IsConnected()) IsExpanded3 = true;
+        Transmit1 = dataSetting.Transmit1;
+        Transmit2 = dataSetting.Transmit2;
+        Transmit3 = dataSetting.Transmit3;
+        Transmit4 = dataSetting.Transmit4;
+
+        Light1Mode = dataSetting.Light1Mode;
+        Light2Mode = dataSetting.Light2Mode;
+        Light3Mode = dataSetting.Light3Mode;
+        Light4Mode = dataSetting.Light4Mode;
+
+        TimerInterval = dataSetting.TimerInterval;
+
+        Port = dataSetting.Port;
+        Baudrate = dataSetting.Baudrate;
+    }
+
+    private void EnableEditTransmit()
+    {
+        ResetTransmit1 = Transmit1;
+        ResetTransmit2 = Transmit2;
+        ResetTransmit3 = Transmit3;
+        ResetTransmit4 = Transmit4;
+        EditTransmit = true;
+    }
+
+    private void CancelEditTransmit()
+    {
+        Transmit1 = ResetTransmit1;
+        Transmit2 = ResetTransmit2;
+        Transmit3 = ResetTransmit3;
+        Transmit4 = ResetTransmit4;
+        EditTransmit = false;
+    }
+
+    private void UpdateTransmit()
+    {
+        EditTransmit = false;
+    }
+
+
+    private bool EditFrequency { get; set; } = false;
+
+    private int TimerInterval { get; set; } = 500;
+    private int ResetTimerInterval { get; set; } = 500;
+
+    private void EnableEditFrequency()
+    {
+        ResetTimerInterval = TimerInterval;
+        EditFrequency = true;
+    }
+
+    private void CancelEditFrequency()
+    {
+        TimerInterval = ResetTimerInterval;
+        EditFrequency = false;
+    }
+
+    private void UpdateFrequency()
+    {
+        EditFrequency = false;
+    }
+
+    private bool EditComPort { get; set; } = false;
+    private int Baudrate { get; set; } = 57600;
+    private int ResetBaudrate { get; set; } = 57600;
+    private string Port { get; set; } = "COM16";
+    private string ResetPort { get; set; } = "COM16";
+
+    private void EnableEditComPort()
+    {
+        ResetBaudrate = Baudrate;
+        ResetPort = Port;
+        EditComPort = true;
+    }
+
+    private void CancelEditComPort()
+    {
+        Port = ResetPort;
+        Baudrate = ResetBaudrate;
+        EditComPort = false;
+    }
+
+    private void UpdateComPort()
+    {
+        EditComPort = false;
+    }
+
+    private void ConnectClick()
+    {
+        comService.Open(Port, Baudrate);
+        if (comService.IsConnected()) EditComPort = false;
+        else EditComPort = true;
+    }
+
+
+    private bool EditLightMode { get; set; } = false;
+    private int Light1Mode { get; set; }
+    private int Light2Mode { get; set; }
+    private int Light3Mode { get; set; }
+    private int Light4Mode { get; set; }
+    private int ResetLight1Mode { get; set; }
+    private int ResetLight2Mode { get; set; }
+    private int ResetLight3Mode { get; set; }
+    private int ResetLight4Mode { get; set; }
+
+    private void EnableEditLightMode()
+    {
+        ResetLight1Mode = Light1Mode;
+        ResetLight2Mode = Light2Mode;
+        ResetLight3Mode = Light3Mode;
+        ResetLight4Mode = Light4Mode;
+        EditLightMode = true;
+    }
+
+    private void CancelEditLightMode()
+    {
+        Light1Mode = ResetLight1Mode;
+        Light2Mode = ResetLight2Mode;
+        Light3Mode = ResetLight3Mode;
+        Light4Mode = ResetLight4Mode;
+        EditLightMode = false;
+    }
+
+    private void UpdateLightMode()
+    {
+        EditLightMode = false;
+    }
+}

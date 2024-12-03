@@ -1,0 +1,22 @@
+﻿@using MARM.Services
+@using MARM.Enums
+@inherits LayoutComponentBase
+
+<PageTitle>MARM</PageTitle>
+
+<div class="vw-100 container-fluid d-flex flex-column vh-100">
+    <header class="d-flex flex-column align-items-center" style="flex-shrink: 0">
+        <img class="w-100 h-100" src="images/Picture1.png" />
+        <h2 class="my-1 w-auto fw-bold">MÁY TÍNH TRUNG TÂM GIÁM SÁT KẾT QUẢ BẮN PHÁO TRÊN BIỂN</h2>
+    </header>
+    <main class="flex-grow-1 overflow-auto">
+        @Body
+    </main>
+    <footer class="vw-100 d-flex justify-content-between align-items-center" style="flex-shrink: 0; background-color: #FFD966;">
+        <NavMenu/>
+    </footer>
+</div>
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />

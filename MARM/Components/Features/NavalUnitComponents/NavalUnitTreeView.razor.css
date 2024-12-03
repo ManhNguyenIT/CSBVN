@@ -1,0 +1,10 @@
+﻿.naval-unit-item {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+    .naval-unit-item.selected {
+        background-color: #1E88E5;
+        color: white;
+    }
