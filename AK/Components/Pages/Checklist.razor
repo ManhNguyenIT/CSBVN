@@ -35,154 +35,94 @@
     <div class="d-grid" style="grid-template-columns: 1fr 1fr; gap: 16px;">
         <!-- Thẻ card đầu tiên -->
         <div class="d-flex flex-column">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
+            <MudTable Items="@data" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Dải
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Bia số
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Tình trạng HĐ
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (data.IndexOf(@context) == 0 || data[data.IndexOf(@context) - 1].Range != @context.Range)
+                    {
+                        <MudTd DataLabel="Dải" RowSpan="@data.Count(x => x.Range == @context.Range)" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.Range</MudTd>
+                    }
+                    <MudTd DataLabel="Bia số" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.BiaSo</MudTd>
+                    <MudTd DataLabel="Tình trạng HĐ" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.TinhTrang</MudTd>
+                </RowTemplate>
+            </MudTable>
+            <MudTable Items="@data" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Dải
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Bia số
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Tình trạng HĐ
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (data.IndexOf(@context) == 0 || data[data.IndexOf(@context) - 1].Range != @context.Range)
+                    {
+                        <MudTd DataLabel="Dải" RowSpan="@data.Count(x => x.Range == @context.Range)" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.Range</MudTd>
+                    }
+                    <MudTd DataLabel="Bia số" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.BiaSo</MudTd>
+                    <MudTd DataLabel="Tình trạng HĐ" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.TinhTrang</MudTd>
+                </RowTemplate>
+            </MudTable>
         </div>
 
         <!-- Thẻ card thứ hai với video -->
         <div class="d-flex flex-column">
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Dải</th>
-                        <th>Bia số</th>
-                        <th>
-                            Tình trạng HĐ
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4">Dải 1</td>
-                        <td>Bia số 10</td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 01
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 6b
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bia số 7e 02
-                        </td>
-                        <td>Bình thường</td>
-                    </tr>
-                </tbody>
-            </table>
+            <MudTable Items="@data" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Dải
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Bia số
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Tình trạng HĐ
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (data.IndexOf(@context) == 0 || data[data.IndexOf(@context) - 1].Range != @context.Range)
+                    {
+                        <MudTd DataLabel="Dải" RowSpan="@data.Count(x => x.Range == @context.Range)" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.Range</MudTd>
+                    }
+                    <MudTd DataLabel="Bia số" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.BiaSo</MudTd>
+                    <MudTd DataLabel="Tình trạng HĐ" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.TinhTrang</MudTd>
+                </RowTemplate>
+            </MudTable>
+            <MudTable Items="@data" Bordered="true" Striped="true">
+                <HeaderContent>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Dải
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Bia số
+                    </MudTh>
+                    <MudTh Style="color: white; font-weight: bold; background-color: #4472C4; text-align: center; font-size: 18px; padding: 8px;">
+                        Tình trạng HĐ
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    @if (data.IndexOf(@context) == 0 || data[data.IndexOf(@context) - 1].Range != @context.Range)
+                    {
+                        <MudTd DataLabel="Dải" RowSpan="@data.Count(x => x.Range == @context.Range)" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.Range</MudTd>
+                    }
+                    <MudTd DataLabel="Bia số" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.BiaSo</MudTd>
+                    <MudTd DataLabel="Tình trạng HĐ" Style="text-align: center; font-size: 16px; vertical-align: middle; padding: 8px;">@context.TinhTrang</MudTd>
+                </RowTemplate>
+            </MudTable>
         </div>
 
     </div>
@@ -193,6 +133,20 @@
     {
         public int Id { get; set; }
         public bool? Status { get; set; }
+    }
+    private List<RowData> data = new()
+    {
+        new RowData { Range = "Dải 1", BiaSo = "Bia số 10", TinhTrang = "Bình thường" },
+        new RowData { Range = "Dải 1", BiaSo = "Bia số 7e 01", TinhTrang = "Bình thường" },
+        new RowData { Range = "Dải 1", BiaSo = "Bia số 6b", TinhTrang = "Bình thường" },
+        new RowData { Range = "Dải 1", BiaSo = "Bia số 7e 02", TinhTrang = "Bình thường" }
+    };
+
+    private class RowData
+    {
+        public string Range { get; set; }
+        public string BiaSo { get; set; }
+        public string TinhTrang { get; set; }
     }
 
     protected override void OnInitialized()
